@@ -1,15 +1,15 @@
 #include "http_client.h"
-
-// ³õÊ¼»¯client¾²Ì¬±äÁ¿
+ 
+// åˆå§‹åŒ–clienté™æ€å˜é‡
 int HttpClient::s_exit_flag = 0;
 ReqCallback HttpClient::s_req_callback;
-
-// ¿Í»§¶ËµÄÍøÂçÇëÇóÏìÓ¦
+ 
+// å®¢æˆ·ç«¯çš„ç½‘ç»œè¯·æ±‚å“åº”
 void HttpClient::OnHttpEvent(mg_connection *connection, int event_type, void *event_data)
 {
 	http_message *hm = (struct http_message *)event_data;
 	int connect_status;
-
+ 
 	switch (event_type) 
 	{
 	case MG_EV_CONNECT:
@@ -25,9 +25,9 @@ void HttpClient::OnHttpEvent(mg_connection *connection, int event_type, void *ev
 		printf("Got reply:\n%.*s\n", (int)hm->body.len, hm->body.p);
 		std::string rsp = std::string(hm->body.p, hm->body.len);
 		connection->flags |= MG_F_SEND_AND_CLOSE;
-		s_exit_flag = 1; // Ã¿´ÎÊÕµ½ÇëÇóºó¹Ø±Õ±¾´ÎÁ¬½Ó£¬ÖØÖÃ±ê¼Ç
+		s_exit_flag = 1; // æ¯æ¬¡æ”¶åˆ°è¯·æ±‚åå…³é—­æœ¬æ¬¡è¿æ¥ï¼Œé‡ç½®æ ‡è®°
         
-		// »Øµ÷´¦Àí
+		// å›è°ƒå¤„ç†
 		s_req_callback(rsp);
 	}
 		break;
@@ -42,23 +42,23 @@ void HttpClient::OnHttpEvent(mg_connection *connection, int event_type, void *ev
 		break;
 	}
 }
-
-
-// ·¢ËÍÒ»´ÎÇëÇó£¬²¢»Øµ÷´¦Àí£¬È»ºó¹Ø±Õ±¾´ÎÁ¬½Ó
+ 
+ 
+// å‘é€ä¸€æ¬¡è¯·æ±‚ï¼Œå¹¶å›è°ƒå¤„ç†ï¼Œç„¶åå…³é—­æœ¬æ¬¡è¿æ¥
 void HttpClient::SendReq(const std::string &url, ReqCallback req_callback)
 {
-	// ¸ø»Øµ÷º¯Êı¸³Öµ
+	// ç»™å›è°ƒå‡½æ•°èµ‹å€¼
 	s_req_callback = req_callback;
 	mg_mgr mgr;
 	mg_mgr_init(&mgr, NULL);
 	auto connection = mg_connect_http(&mgr, OnHttpEvent, url.c_str(), NULL, NULL);
 	mg_set_protocol_http_websocket(connection);
-
+ 
 	printf("Send http request %s\n", url.c_str());
-
+ 
 	// loop
 	while (s_exit_flag == 0)
 		mg_mgr_poll(&mgr, 500);
-
+ 
 	mg_mgr_free(&mgr);
 }

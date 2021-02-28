@@ -1,15 +1,15 @@
 #include <iostream>
 #include "http_client.h"
-
+ 
 void handle_func(std::string rsp)
 {
 	// do sth according to rsp
 	std::cout << "http rsp1: " << rsp << std::endl;
 }
-
+ 
 int main()
 {
-	// Æ´ÍêÕûurl£¬´ø²ÎÊý
+	// æ‹¼å®Œæ•´urlï¼Œå¸¦å‚æ•°ï¼Œæš‚æ—¶åªå†™äº†GETè¯·æ±‚
 	std::string url1 = "http://127.0.0.1:7999/api/hello";
 	HttpClient::SendReq(url1, handle_func);
 	
@@ -17,8 +17,8 @@ int main()
 	HttpClient::SendReq(url2, [](std::string rsp) { 
 		std::cout << "http rsp2: " << rsp << std::endl; 
 	});
-
+ 
 	system("pause");
-
+ 
 	return 0;
 }
